@@ -120,4 +120,31 @@ You have a file called `data.txt` where column 1 is a name and column 2 is a sco
 
 **Hint:** `awk '$2 > 80 {print $1, "PASSED"} END {print "Processing Complete"}' data.txt`
 
-**Would you like me to show you how to combine `find`, `grep`, and `awk` into one "Mega-Command" to generate a report of every large file on your system?**
+### Your Challenge:
+
+---------------------------
+Name|Sex|Age|Height|Weight|
+----|---|---|------|------|
+Alex|M|41|74|170
+Bert|M|42|68|166
+Carl|M|32|70|155
+Dave|M|39|72|167
+Elly|F|30|66|124
+
+1. Find record where age is greater than 40
+2. Give title to the output as "Report"
+3. find average weight of this group and return the result at the very end
+
+awk -F, 'BEGIN{print "Report"} $3>40{sum+=$NF; count+=1;  print $1 "|"  $2 "|"  $3} END{print  "Average weight of people above 40yrs old is " sum/ count} ' sample_data.csv
+
+Report
+
+|Name|Sex|Age|
+|----|---|---|
+Alex|M|41
+Bert|M|42
+
+Average weight of people above 40yrs old is 112
+
+
+
