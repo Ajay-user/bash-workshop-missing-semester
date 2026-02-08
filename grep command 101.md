@@ -111,5 +111,142 @@ grep "^1" sample.txt
 ### Challenge for you:
 
 Try to find how many lines in your `sample.txt` **do not** contain the number "2" and show their line numbers.
+
 Ans : grep -v 2 -n sample.txt 
+
+
+
+Regular Expressions (Regex) turn `grep` from a simple word-finder into a surgical tool. In Linux, there are two main types: **Basic (BRE)** and **Extended (ERE)**. I recommend using **`grep -E`** (Extended), as it's more intuitive and powerful.
+
+Here are solid, real-world examples to help you master the syntax.
+
+---
+
+## 1. Anchors: Where is the pattern?
+
+Anchors don't match characters; they match **positions**.
+
+* **`^` (Caret):** Matches the start of a line.
+* **`$` (Dollar):** Matches the end of a line.
+
+**Examples:**
+
+```bash
+# Find lines that START with "1"
+grep "^1" sample.txt
+
+# Find lines that consist ONLY of the number "2" (start, 2, then end)
+grep "^2$" sample.txt
+
+# Find lines that end with a period (note: \ is used to escape the dot)
+grep "\.$" file.txt
+
+```
+
+---
+
+## 2. Character Sets: "Pick One from the List"
+
+Use square brackets `[]` to match any **one** character inside them.
+
+* **`[0-9]`**: Any single digit.
+* **`[a-z]`**: Any lowercase letter.
+* **`[^0-9]`**: Any character that is **NOT** a digit (the `^` inside brackets means "not").
+
+**Examples:**
+
+```bash
+# Find lines containing 2, 3, or 4
+grep "[234]" sample.txt
+
+# Find lines that do NOT start with a number
+grep "^[^0-9]" file.txt
+
+```
+
+---
+
+## 3. Quantifiers: "How many times?"
+
+These tell `grep` how many times the preceding character should appear. (Note: These work best with `grep -E`).
+
+* **`?`**: 0 or 1 time (Optional).
+* **`*`**: 0 or more times.
+* **`+`**: 1 or more times.
+* **`{n}`**: Exactly  times.
+
+**Examples:**
+
+```bash
+# Find "color" or "colour" (the 'u' is optional)
+grep -E "colou?r" file.txt
+
+# Find lines with exactly three digits in a row
+grep -E "[0-9]{3}" file.txt
+
+```
+
+---
+
+## 4. The Wildcard and Alternation
+
+* **`.` (Dot):** Matches **any** single character except a newline.
+* **`|` (Pipe):** The "OR" operator.
+
+**Examples:**
+
+```bash
+# Find "c", then ANY character, then "t" (matches cat, cot, c9t, etc.)
+grep "c.t" file.txt
+
+# Find lines containing "Error" OR "Warning" OR "Critical"
+grep -E "Error|Warning|Critical" system.log
+
+```
+
+---
+
+## 5. Pro-Level Combinations (The "Solid" Examples)
+
+### A. Finding Valid IP Addresses (Simplified)
+
+An IP address is four sets of numbers separated by dots.
+
+```bash
+grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" logs.txt
+
+```
+
+### B. Finding Email Addresses
+
+Looking for `text@text.text`:
+
+```bash
+grep -E "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" contact_list.txt
+
+```
+
+### C. Cleaning Up a File (Removing Comments and Blank Lines)
+
+This is a classic sysadmin trick. It finds lines that start with `#` OR are completely empty, and the `-v` flag hides them.
+
+```bash
+grep -Ev "^#|^$" config_file.conf
+
+```
+
+---
+
+## Summary Table
+
+| Symbol | Meaning | Example |
+| --- | --- | --- |
+| **`.`** | Any single character | `a.c` (abc, a2c) |
+| **`^`** | Start of line | `^Root` |
+| **`$`** | End of line | `false$` |
+| **`*`** | 0 or more of previous | `ab*c` (ac, abc, abbc) |
+| **`+`** | 1 or more of previous | `ab+c` (abc, abbc) |
+| **`[ ]`** | One from the set | `[aeiou]` (any vowel) |
+| pipe | Logical OR |
+
 
