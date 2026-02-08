@@ -124,8 +124,9 @@ You have a list of numbers. Can you write a `sed` command that:
 2. Replaces the number "7" with the word "LUCKY".
 3. Saves the changes to the file.
 
+---
 
-### Capture groups
+# Capture groups
 
 Capture groups are the "memory" of the `sed` world. They allow you to snatch pieces of text and store them in numbered "pockets" to be reused or rearranged later.
 
