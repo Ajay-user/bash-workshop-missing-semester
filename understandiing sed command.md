@@ -124,4 +124,95 @@ You have a list of numbers. Can you write a `sed` command that:
 2. Replaces the number "7" with the word "LUCKY".
 3. Saves the changes to the file.
 
-**Would you like to see how to combine `grep` and `sed` together using "pipes" to perform complex data surgery?**
+
+### Capture groups
+
+Capture groups are the "memory" of the `sed` world. They allow you to snatch pieces of text and store them in numbered "pockets" to be reused or rearranged later.
+
+In `sed`, you create a capture group by wrapping a part of your regex in **escaped parentheses**: `\( \)` (or just `( )` if using Extended Regex with `-E`).
+
+---
+
+## 1. The Anatomy of a Swap
+
+To swap "John Doe" to "Doe, John", we need to identify two distinct groups of text separated by a space.
+
+**The Command:**
+
+```bash
+echo "John Doe" | sed -E 's/([A-Z][a-z]+) ([A-Z][a-z]+)/\2, \1/'
+
+```
+
+### How it works:
+
+1. **`([A-Z][a-z]+)`**: This is **Group 1**. It looks for a capital letter followed by lowercase letters (the first name).
+2. **`     `**: A literal space separates the two names.
+3. **`([A-Z][a-z]+)`**: This is **Group 2**. It looks for the second name.
+4. **`\2, \1`**: This is the **Backreference**.
+* `\2` pulls whatever was found in the second set of parentheses.
+* `\1` pulls whatever was found in the first set.
+* We added a literal comma and space in between.
+
+
+
+---
+
+## 2. Real-World Examples
+
+### A. Swapping Dates (YYYY-MM-DD to DD/MM/YYYY)
+
+If you have a log file with dates like `2023-10-25` and your boss wants them in a different format:
+
+```bash
+echo "2023-10-25" | sed -E 's/([0-9]{4})-([0-9]{2})-([0-9]{2})/\3\/\2\/\1/'
+
+```
+
+* `\1` = 2023
+* `\2` = 10
+* `\3` = 25
+* **Result:** `25/10/2023`
+
+### B. Cleaning Up Key-Value Pairs
+
+If you have a config file like `Password = Secret123` and you want to format it as `Secret123:Password`:
+
+```bash
+echo "Password = Secret123" | sed -E 's/(.*) = (.*)/\2:\1/'
+
+```
+
+---
+
+## 3. The "Pro" Rules for Capture Groups
+
+* **Max Limit:** You can have up to **9** capture groups (`\1` through `\9`).
+* **Nesting:** You can put groups inside groups! `sed` numbers them based on the order of the opening parenthesis `(`.
+* **Extended vs. Basic:** * **Basic (`sed`):** You must escape parentheses: `\(\)`.
+* **Extended (`sed -E`):** You use plain parentheses: `()`. **Always use `-E**` for capture groups; it’s much easier to read.
+
+
+
+---
+
+## 4. Why this makes you productive
+
+Imagine you have a CSV file with 10,000 rows where the "Last Name, First Name" are in the wrong columns.
+`sed -i -E 's/([^,]+), ([^,]+)/\2 \1/' data.csv`
+
+In less than a second, you've reformatted the entire database without ever opening Excel.
+
+---
+
+### One Last Trick: Deleting Everything *Except* the Group
+
+If you have a line like `user_id: 5521 (active)` and you ONLY want the number:
+
+```bash
+echo "user_id: 5521 (active)" | sed -E 's/.*: ([0-9]+).*/\1/'
+
+```
+
+By matching the *entire* line (`.*` at start and end) but capturing only the digits, the `\1` replacement effectively deletes everything else.
+
